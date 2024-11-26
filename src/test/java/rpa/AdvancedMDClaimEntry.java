@@ -25,7 +25,7 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.text.WordUtils;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -168,7 +168,7 @@ rowNum++;
 		String[] diagArray = diagnosis.split(",");
 		String lastNameProvider= 	removeSingleLetters(refProvider);
 		DOB=	formatter.format(parser.parse(DOB));
-		 firstName = null ;
+	/*	 firstName = null ;
 		 lastName= null ;
 		
 		if(name.contains(",")) {
@@ -178,7 +178,7 @@ rowNum++;
 		}
 		firstName = 	WordUtils.capitalizeFully(firstName);
 		lastName = 	WordUtils.capitalizeFully(lastName);
-
+*/
 		logger.info("New record");
 		
 		if(status.isBlank() || status.isEmpty()) {
@@ -206,22 +206,22 @@ try {
 			
 try {		
 	logger.info("patient searching in try block");
-	wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='"+firstName+"']/following-sibling::span[contains(text(),'"+lastName+"')]/ancestor::div[@class='row-item']/following-sibling::div//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")));
+	wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")));
 
 			//span[text()='Wood']/following-sibling::span[contains(text(),'William')]/ancestor::div[@class='row-item']/following-sibling::div[1]/div[contains(text(),'07/27/1965')]
 			
-			driver.findElement(By.xpath("//span[text()='"+firstName+"']/following-sibling::span[contains(text(),'"+lastName+"')]/ancestor::div[@class='row-item']/following-sibling::div//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")).click();
+			driver.findElement(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")).click();
 			logger.info("patient selected");
 			
 }catch(Exception e) {
 	logger.info("patient searching in catch block");
 	
 	try {
-		wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'"+firstName+"') and contains(text(),'"+lastName+"')]/parent::div/following-sibling::div/div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")));
+		wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")));
 
 		//span[text()='Wood']/following-sibling::span[contains(text(),'William')]/ancestor::div[@class='row-item']/following-sibling::div[1]/div[contains(text(),'07/27/1965')]
 		
-		driver.findElement(By.xpath("//div[contains(text(),'"+firstName+"') and contains(text(),'"+lastName+"')]/parent::div/following-sibling::div/div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")).click();
+		driver.findElement(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")).click();
 		logger.info("patient selected");
 		
 		
