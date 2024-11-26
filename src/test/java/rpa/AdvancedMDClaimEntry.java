@@ -367,7 +367,7 @@ for (WebElement label : labels) {
 			((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.id("txtEndDate")), DOS);
 			logger.info("Ending DOS entered as "+DOS);
 		
-			
+		/*	
 			if(!admissionDate.contains("-") && flagAdmissionDate==true) {
 			
 			driver.findElement(By.id("btnExtraInfo")).click();
@@ -399,7 +399,7 @@ for (WebElement label : labels) {
 			logger.info("Switched to charge window");
 			
 			}
-			
+			*/
 			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@id='ellProvider']//span"))).click();
 			logger.info("Clicked on provider options");
 
