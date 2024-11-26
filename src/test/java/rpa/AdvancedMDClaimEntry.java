@@ -199,7 +199,7 @@ try {
 			waitExplicit.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[contains(@id,'mat-input')]")));
 
 			driver.findElement(By.xpath("//input[contains(@id,'mat-input')]")).clear();
-			driver.findElement(By.xpath("//input[contains(@id,'mat-input')]")).sendKeys(name);
+			driver.findElement(By.xpath("//input[contains(@id,'mat-input')]")).sendKeys(chartNum);
 			
 			
 			logger.info("patient name entered as: "+name +" | DOB: "+DOB+" | Chart Number: "+chartNum);
