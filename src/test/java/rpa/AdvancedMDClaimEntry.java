@@ -344,13 +344,14 @@ for (WebElement label : labels) {
 			
 			wait.until(ExpectedConditions.elementToBeClickable(By.id("selEpisode")));
 			Select select = new Select(driver.findElement(By.id("selEpisode")));
-			
+			Boolean flagAdmissionDate =false;
 			for (WebElement option : select.getOptions()) {
 	            if (option.getText().contains(admissionDate) || option.getText().contains(admissionDate.replace("/", ""))) {
 	            	System.out.println(option.getText().contains(admissionDate) );
 	            	System.out.println(option.getText().contains(admissionDate) );
 	                option.click(); // Select the option
 	                System.out.println("Option selected: " + option.getText());
+	                flagAdmissionDate=true;
 	                break; // Exit loop once the desired option is selected
 	            }
 			}
@@ -367,7 +368,7 @@ for (WebElement label : labels) {
 			logger.info("Ending DOS entered as "+DOS);
 		
 			
-			if(!admissionDate.contains("-")) {
+			if(!admissionDate.contains("-") && flagAdmissionDate==true) {
 			
 			driver.findElement(By.id("btnExtraInfo")).click();
 			logger.info("Extra info button clicked");
@@ -379,7 +380,7 @@ for (WebElement label : labels) {
 				if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&&  !windowHandle.equals(chargeWindow)&& driver.switchTo().window(windowHandle).getTitle().contains("Extra Information")) {
 					// Switch to the new window
 					driver.switchTo().window(windowHandle);
-					logger.info("Switched to charge entry window");
+					logger.info("Switched to extra info window");
 					break;
 				}
 			}
@@ -388,10 +389,8 @@ for (WebElement label : labels) {
 			wait.until(ExpectedConditions.elementToBeClickable(By.id("hospitalizationfrom")));
 			((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.id("hospitalizationfrom")), admissionDate);
 			
-			((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.id("hospitalizationto")), admissionDate);
 			
 			logger.info("Admission from date entered as: "+ admissionDate);
-			logger.info("Admission to date entered as: "+ admissionDate);
 			
 			driver.findElement(By.id("btnSaveClose")).click();
 			logger.info("Saven and close button clicked");
