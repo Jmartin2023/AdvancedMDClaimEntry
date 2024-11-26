@@ -25,7 +25,7 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.text.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
