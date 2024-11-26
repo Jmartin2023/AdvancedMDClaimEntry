@@ -476,8 +476,7 @@ Thread.sleep(2000);
 						logger.info("Diagnosis "+i+" entered "+diagArray[i]);
 					}
 				Thread.sleep(2000);
-				driver.findElement(By.xpath("//label[text()='ICD-10 Diagnosis Codes']")).click();
-				logger.info("Clicked on text: ICD-10 Diagnosis Codes");
+				
 				
 				allWindowHandles = driver.getWindowHandles();
 
