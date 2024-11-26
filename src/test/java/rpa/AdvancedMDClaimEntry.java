@@ -167,7 +167,19 @@ rowNum++;
 		String diagnosis = data.get("DX");
 		String[] diagArray = diagnosis.split(",");
 		String lastNameProvider= 	removeSingleLetters(refProvider);
+		if(DOB.contains("-")) {
+			DOB="";
+		}else {
 		DOB=	formatter.format(parser.parse(DOB));
+		}
+		
+		if(chartNum.isBlank()|| chartNum.isBlank()|| chartNum.contains("-")) {
+			excel.setCellData(sheetName, "Bot Status", rowNum, "Chart Number not present");
+			logger.info("Chart Number not present");
+			throw new SkipException("Chart Number not present");
+			
+		}
+		
 	/*	 firstName = null ;
 		 lastName= null ;
 		
@@ -203,8 +215,10 @@ try {
 			
 			
 			logger.info("patient name entered as: "+name +" | DOB: "+DOB+" | Chart Number: "+chartNum);
-			
-try {		
+
+	
+try {
+	
 	logger.info("patient searching in try block");
 	wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")));
 
@@ -217,11 +231,11 @@ try {
 	logger.info("patient searching in catch block");
 	
 	try {
-		wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")));
+		wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div/span[contains(text(),'"+chartNum+"')]")));
 
 		//span[text()='Wood']/following-sibling::span[contains(text(),'William')]/ancestor::div[@class='row-item']/following-sibling::div[1]/div[contains(text(),'07/27/1965')]
 		
-		driver.findElement(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")).click();
+		driver.findElement(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div/span[contains(text(),'"+chartNum+"')]")).click();
 		logger.info("patient selected");
 		
 		
@@ -357,7 +371,7 @@ for (WebElement label : labels) {
 			}
 
 			Thread.sleep(2000);
-			
+		try {	
 			driver.findElement(By.id("txtBeginDate")).clear();
 			driver.findElement(By.id("txtEndDate")).clear();
 			
@@ -366,6 +380,13 @@ for (WebElement label : labels) {
 			logger.info("Starting DOS entered as "+DOS);
 			((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.id("txtEndDate")), DOS);
 			logger.info("Ending DOS entered as "+DOS);
+		}catch(Exception e) {
+			excel.setCellData(sheetName, "Bot Status", rowNum, "DOS option disabled on Portal");
+			driver.close();
+			driver.switchTo().window(secondWindow);
+			logger.info("Skipping this record, DOS option disabled on Portal");
+			throw new SkipException("Skipping this record");
+		}
 		
 		/*	
 			if(!admissionDate.contains("-") && flagAdmissionDate==true) {
@@ -388,7 +409,7 @@ for (WebElement label : labels) {
 			
 			wait.until(ExpectedConditions.elementToBeClickable(By.id("hospitalizationfrom")));
 			((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.id("hospitalizationfrom")), admissionDate);
-			
+			driver.findElement(By.id("hospitalizationfrom")).sendKeys(Keys.TAB);
 			
 			logger.info("Admission from date entered as: "+ admissionDate);
 			
@@ -398,8 +419,8 @@ for (WebElement label : labels) {
 			driver.switchTo().window(chargeWindow);
 			logger.info("Switched to charge window");
 			
-			}
-			*/
+			} */
+			
 			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@id='ellProvider']//span"))).click();
 			logger.info("Clicked on provider options");
 
@@ -476,7 +497,8 @@ Thread.sleep(2000);
 						logger.info("Diagnosis "+i+" entered "+diagArray[i]);
 					}
 				Thread.sleep(2000);
-				
+				driver.findElement(By.xpath("//label[text()='ICD-10 Diagnosis Codes']")).click();
+				logger.info("Clicked on text: ICD-10 Diagnosis Codes");
 				
 				allWindowHandles = driver.getWindowHandles();
 
@@ -496,6 +518,9 @@ Thread.sleep(2000);
 				logger.info("Clicked on Add button");
 				Thread.sleep(2000);
 				
+				
+				
+				
 				try {
 					
 					String alertText = driver.switchTo().alert().getText();
@@ -510,9 +535,6 @@ Thread.sleep(2000);
 				
 					throw new SkipException("Skipping this record, Charge already in database");
 					
-					
-				}catch(Exception e) {}
-				try {
 					
 				}catch(Exception e) {}
 				
