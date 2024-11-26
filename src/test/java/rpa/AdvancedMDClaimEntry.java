@@ -496,7 +496,22 @@ Thread.sleep(2000);
 				logger.info("Clicked on Add button");
 				Thread.sleep(2000);
 				
+				try {
+					
+					String alertText = driver.switchTo().alert().getText();
+					logger.info(alertText);
+					driver.switchTo().alert().dismiss();
+					excel.setCellData(sheetName, "Bot Status", rowNum, alertText);
+					
+					driver.switchTo().window(chargeWindow);
+					wait.until(ExpectedConditions.elementToBeClickable(By.id("btnCancel"))).click();
+					driver.switchTo().window(secondWindow);
+					logger.info("Skipping this record, Charge already in database");
 				
+					throw new SkipException("Skipping this record, Charge already in database");
+					
+					
+				}catch(Exception e) {}
 				try {
 					
 				}catch(Exception e) {}
