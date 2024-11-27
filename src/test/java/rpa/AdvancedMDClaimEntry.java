@@ -94,7 +94,7 @@ public class AdvancedMDClaimEntry {
 
 		driver = sel.getDriver();
 		waitExplicit	= new WebDriverWait(driver, Duration.ofSeconds(50));
-		wait10	= new WebDriverWait(driver, Duration.ofSeconds(10));
+		wait10	= new WebDriverWait(driver, Duration.ofSeconds(5));
 		//js = (JavascriptExecutor) driver;
 
 		utility = new Utility();
