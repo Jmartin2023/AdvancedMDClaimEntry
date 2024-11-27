@@ -575,7 +575,8 @@ Thread.sleep(2000);
 					}
 				}
 				
-				
+				driver.switchTo().window(chargeWindow);
+			logger.info("Switched to charge window");
 				
 				driver.findElement(By.id("btnAddSave")).click();
 				logger.info("Clicked on Add button");
