@@ -178,6 +178,7 @@ rowNum++;
 		String cpts = data.get("CPTs").replace(".0", "");
 		String diagnosis = data.get("DX");
 		String[] diagArray;
+		String facilityCode = data.get("Facility Code").trim();
 		if(diagnosis.contains(",")) {
 			diagArray = diagnosis.split(",");	
 		}
@@ -385,11 +386,11 @@ for (WebElement label : labels) {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='ellFacility']/input")));
 		
 		
-		((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.xpath("//div[@id='ellFacility']/input")), facility.split("-")[0].trim());
+		((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.xpath("//div[@id='ellFacility']/input")), facilityCode);
 		driver.findElement(By.xpath("//div[@id='ellFacility']/input")).sendKeys(Keys.TAB);
 		
-		//	driver.findElement(By.xpath("//div[@id='ellFacility']/input")).sendKeys(facility.split("-")[0].trim()+Keys.TAB)	;
-		logger.info("Facility entered as "+facility.split("-")[0].trim());
+		//	driver.findElement(By.xpath("//div[@id='ellFacility']/input")).sendKeys(facilityCode+Keys.TAB)	;
+		logger.info("Facility entered as "+facilityCode);
 						Thread.sleep(3500);
 		
 			
