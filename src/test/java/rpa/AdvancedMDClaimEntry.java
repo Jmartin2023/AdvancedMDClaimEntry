@@ -200,7 +200,7 @@ rowNum++;
 			
 		}else {
 			
-			chartNum.trim().replace(".0", "").trim();
+			chartNum =chartNum.trim().replace(".0", "").trim();
 			
 		}
 		if(admissionDate.isBlank()|| admissionDate.isBlank()|| admissionDate.contains("-")) {
