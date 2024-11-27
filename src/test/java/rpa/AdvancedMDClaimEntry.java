@@ -148,6 +148,9 @@ public class AdvancedMDClaimEntry {
 
 
 	}
+	
+	
+	
 	@Test(dataProvider= "getData") 
 	public void claimEntry(Hashtable<String,String> data) throws InterruptedException, ParseException {
 rowNum++;
@@ -165,7 +168,14 @@ rowNum++;
 		String facility = data.get("Hospital Name").trim();
 		String cpts = data.get("CPTs").replace(".0", "");
 		String diagnosis = data.get("DX");
-		String[] diagArray = diagnosis.split(",");
+		String[] diagArray;
+		if(diagnosis.contains(",")) {
+			diagArray = diagnosis.split(",");	
+		}
+		else{
+			 diagArray = diagnosis.split(" ");	
+		}
+		
 		String lastNameProvider= 	removeSingleLetters(refProvider);
 		if(DOB.contains("-")) {
 			DOB="";
@@ -174,11 +184,19 @@ rowNum++;
 		}
 		
 		if(chartNum.isBlank()|| chartNum.isBlank()|| chartNum.contains("-")) {
-			excel.setCellData(sheetName, "Bot Status", rowNum, "Chart Number not present");
+			excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. Chart Number not present.");
 			logger.info("Chart Number not present");
 			throw new SkipException("Chart Number not present");
 			
 		}
+		if(admissionDate.isBlank()|| admissionDate.isBlank()|| admissionDate.contains("-")) {
+			excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. Admission Date not present.");
+			logger.info("Admission Date not present.");
+			throw new SkipException("Admission Date not present.");
+			
+		}
+		
+		
 		
 	/*	 firstName = null ;
 		 lastName= null ;
@@ -364,6 +382,7 @@ for (WebElement label : labels) {
 	            	System.out.println(option.getText().contains(admissionDate) );
 	            	System.out.println(option.getText().contains(admissionDate) );
 	                option.click(); // Select the option
+	                driver.findElement(By.id("selEpisode")).sendKeys(Keys.TAB);
 	                System.out.println("Option selected: " + option.getText());
 	                flagAdmissionDate=true;
 	                break; // Exit loop once the desired option is selected
@@ -388,38 +407,8 @@ for (WebElement label : labels) {
 			throw new SkipException("Skipping this record");
 		}
 		
-		/*	
-			if(!admissionDate.contains("-") && flagAdmissionDate==true) {
 			
-			driver.findElement(By.id("btnExtraInfo")).click();
-			logger.info("Extra info button clicked");
-			
-			Thread.sleep(3000);
-			allWindowHandles = driver.getWindowHandles();
-
-			for (String windowHandle : allWindowHandles) {
-				if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&&  !windowHandle.equals(chargeWindow)&& driver.switchTo().window(windowHandle).getTitle().contains("Extra Information")) {
-					// Switch to the new window
-					driver.switchTo().window(windowHandle);
-					logger.info("Switched to extra info window");
-					break;
-				}
-			}
-			
-			
-			wait.until(ExpectedConditions.elementToBeClickable(By.id("hospitalizationfrom")));
-			((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.id("hospitalizationfrom")), admissionDate);
-			driver.findElement(By.id("hospitalizationfrom")).sendKeys(Keys.TAB);
-			
-			logger.info("Admission from date entered as: "+ admissionDate);
-			
-			driver.findElement(By.id("btnSaveClose")).click();
-			logger.info("Saven and close button clicked");
-			
-			driver.switchTo().window(chargeWindow);
-			logger.info("Switched to charge window");
-			
-			} */
+		
 			
 			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@id='ellProvider']//span"))).click();
 			logger.info("Clicked on provider options");
@@ -466,13 +455,61 @@ Thread.sleep(2000);
 			driver.findElement(By.id("btnOK")).click();
 			logger.info("OK Button clicked");
 
+			driver.switchTo().window(chargeWindow);
+			logger.info("Switched to charge window");
+			
+			Thread.sleep(2000);
+			if(!admissionDate.contains("-") && flagAdmissionDate==true) {
+				wait.until(ExpectedConditions.elementToBeClickable(By.id("btnExtraInfo")));
+				driver.findElement(By.id("btnExtraInfo")).click();
+				logger.info("Extra info button clicked");
+				
+				Thread.sleep(3000);
+				allWindowHandles = driver.getWindowHandles();
+
+				for (String windowHandle : allWindowHandles) {
+					if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&&  !windowHandle.equals(chargeWindow)&& driver.switchTo().window(windowHandle).getTitle().contains("Extra Information")) {
+						// Switch to the new window
+						driver.switchTo().window(windowHandle);
+						logger.info("Switched to extra info window");
+						break;
+					}
+				}
+				
+				String extraInfoWindow = driver.getWindowHandle();
+				wait.until(ExpectedConditions.elementToBeClickable(By.id("hospitalizationfrom")));
+				((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.id("hospitalizationfrom")), admissionDate);
+				driver.findElement(By.id("hospitalizationfrom")).sendKeys(Keys.TAB);
+				
+				logger.info("Admission from date entered as: "+ admissionDate);
+				
+				driver.findElement(By.id("btnSaveClose")).click();
+				logger.info("Saven and close button clicked");
+				
+				try {
+					Thread.sleep(2000);
+					String alertMsg = driver.switchTo().alert().getText();
+					excel.setCellData(sheetName, "Admission Date Comments", rowNum, alertMsg);
+					driver.switchTo().alert().dismiss();
+					logger.info("Alert Dismissed "+alertMsg);
+					driver.switchTo().window(extraInfoWindow);
+					logger.info("Switched back to extra info window");
+					driver.close();
+					logger.info("Closed extra info window");
+				}catch(Exception e) {
+					logger.info("Admission Date Added");
+					excel.setCellData(sheetName, "Admission Date Comments", rowNum, "Admission Date Added");
+				}
+				
+				} 
+			
 	/*		allWindowHandles = driver.getWindowHandles();
 
 			for (String windowHandle : allWindowHandles) {
 				if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&& !windowHandle.equals(providerWindow)) {
 					// Switch to the new window
 					driver.switchTo().window(windowHandle);
-					logger.info("Switched to main window");
+					laogger.info("Switched to main window");
 					break;
 				}
 			}
@@ -505,6 +542,7 @@ Thread.sleep(2000);
 				for (String windowHandle : allWindowHandles) {
 					if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&& !windowHandle.equals(chargeWindow)) {
 						// Switch to the new window
+						driver.switchTo().window(windowHandle);
 						String title = driver.getTitle();
 						driver.close();
 						logger.info(title+ " window closed");
