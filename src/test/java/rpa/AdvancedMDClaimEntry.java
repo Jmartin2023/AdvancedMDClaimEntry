@@ -559,8 +559,7 @@ Thread.sleep(2000);
 						logger.info("Diagnosis "+i+" entered "+diagArray[i]);
 					}
 				Thread.sleep(2000);
-				driver.findElement(By.xpath("//label[text()='ICD-10 Diagnosis Codes']")).click();
-				logger.info("Clicked on text: ICD-10 Diagnosis Codes");
+				
 				
 				allWindowHandles = driver.getWindowHandles();
 
@@ -577,6 +576,11 @@ Thread.sleep(2000);
 				
 				driver.switchTo().window(chargeWindow);
 			logger.info("Switched to charge window");
+
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[text()='ICD-10 Diagnosis Codes']")));
+			driver.findElement(By.xpath("//label[text()='ICD-10 Diagnosis Codes']")).click();
+				logger.info("Clicked on text: ICD-10 Diagnosis Codes");
+			
 				
 				driver.findElement(By.id("btnAddSave")).click();
 				logger.info("Clicked on Add button");
