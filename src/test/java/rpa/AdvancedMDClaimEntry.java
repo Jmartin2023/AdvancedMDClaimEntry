@@ -163,14 +163,14 @@ rowNum++;
 		String DOB = data.get("DOB");
 		String providerCode = data.get("Provide Code");
 		if(providerCode.isBlank()|| providerCode.isEmpty() || providerCode.contains("-")) {
-			excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. CPT not present");
+			excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. Provider Code not present");
 			logger.info("CPT not present");
 			throw new SkipException("CPT not present");
 		}else {
 			providerCode = providerCode.trim();
 		}
 		
-		String chartNum = data.get("Chart Number").trim().replace(".0", "").trim();
+		String chartNum = data.get("Chart Number");
 		String phone = data.get("Phone");
 		String renderingProvider = data.get("Rendering Provider").trim();
 		String refProvider = data.get("Referring Provider").trim();
@@ -197,6 +197,10 @@ rowNum++;
 			excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. Chart Number not present.");
 			logger.info("Chart Number not present");
 			throw new SkipException("Chart Number not present");
+			
+		}else {
+			
+			chartNum.trim().replace(".0", "").trim();
 			
 		}
 		if(admissionDate.isBlank()|| admissionDate.isBlank()|| admissionDate.contains("-")) {
