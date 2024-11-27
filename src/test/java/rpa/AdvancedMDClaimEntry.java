@@ -52,6 +52,7 @@ import org.xml.sax.SAXException;
 import objects.ExcelOperations;
 import objects.SeleniumUtils;
 import objects.Utility;
+
 import objects.ExcelReader;
 
 
@@ -80,7 +81,7 @@ public class AdvancedMDClaimEntry {
 	//JavascriptExecutor js;
 	SeleniumUtils sel;
 	Utility utility;
-
+Boolean firstRun;
 	ExcelOperations excelFile;
 	WebDriverWait waitExplicit ;
 	WebDriverWait wait10;
@@ -94,7 +95,7 @@ public class AdvancedMDClaimEntry {
 
 		driver = sel.getDriver();
 		waitExplicit	= new WebDriverWait(driver, Duration.ofSeconds(50));
-		wait10	= new WebDriverWait(driver, Duration.ofSeconds(5));
+		wait10	= new WebDriverWait(driver, Duration.ofSeconds(10));
 		//js = (JavascriptExecutor) driver;
 
 		utility = new Utility();
@@ -146,7 +147,7 @@ public class AdvancedMDClaimEntry {
 		//   Thread.sleep(10000);
 
 
-
+		firstRun=true;
 	}
 	
 	
@@ -168,6 +169,7 @@ rowNum++;
 		}else {
 			providerCode = providerCode.trim();
 		}
+		
 		String chartNum = data.get("Chart Number").trim().replace(".0", "").trim();
 		String phone = data.get("Phone");
 		String renderingProvider = data.get("Rendering Provider").trim();
@@ -188,7 +190,6 @@ rowNum++;
 			DOB="";
 		}else {
 			DOB=DOB.trim();
-		
 		DOB=	formatter.format(parser.parse(DOB));
 		}
 		
@@ -233,7 +234,10 @@ try {
 			
 
 
-	
+			if(firstRun==true) {
+				Thread.sleep(30000);
+			}
+			firstRun=false;
 			
 			waitExplicit.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[contains(@id,'mat-input')]")));
 
@@ -244,6 +248,8 @@ try {
 			logger.info("patient name entered as: "+name +" | DOB: "+DOB+" | Chart Number: "+chartNum);
 
 	
+		
+			
 try {
 	
 	logger.info("patient searching in try block");
@@ -397,6 +403,12 @@ for (WebElement label : labels) {
 	                break; // Exit loop once the desired option is selected
 	            }
 			}
+			
+			if(flagAdmissionDate==false) {
+				logger.info("Admission Date Not Available in Application");
+				excel.setCellData(sheetName, "Admission Date Comments", rowNum, "Admission Date Not Available in Application");
+			}
+			
 
 			Thread.sleep(2000);
 		try {	
@@ -720,7 +732,27 @@ Thread.sleep(2000);
 		}
 		return webEle.isDisplayed();
 	}
+	@AfterMethod()
+	public void afterMethod(ITestResult result) throws IOException {
 
+		if(!result.isSuccess()) {
+			// Test Failed
+			String error = result.getThrowable().getLocalizedMessage();
+			logger.info(error);
+			//result.getThrowable().printStackTrace();
+			try {
+				TakesScreenshot ts = (TakesScreenshot) driver;
+				File ss = ts.getScreenshotAs(OutputType.FILE);
+				String ssPath = "./Screenshots/" + result.getName() + " - " + rowNum + ".png";
+				FileUtils.copyFile(ss, new File(ssPath));
+			} catch (Exception e) {
+				System.out.println("Error taking screenshot");
+			}
+
+		}
+		else {
+			logger.info("Test completed successfully");
+		}}
 
 	@DataProvider
 	public static Object[][] getData(){
