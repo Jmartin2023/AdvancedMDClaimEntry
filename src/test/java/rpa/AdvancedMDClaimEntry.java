@@ -127,7 +127,7 @@ public class AdvancedMDClaimEntry {
 		driver.findElement(By.xpath("//button[contains(text(),'Log in')]")).click();
 		logger.info("Login button clicked");
 
-		Thread.sleep(10000);
+		Thread.sleep(16000);
 		allWindowHandles = driver.getWindowHandles();
 		//driver.switchTo().defaultContent();
 		// Iterate through window handles to find the new window
