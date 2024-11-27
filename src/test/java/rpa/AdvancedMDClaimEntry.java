@@ -430,10 +430,33 @@ for (WebElement label : labels) {
 			driver.close();
 			driver.switchTo().window(secondWindow);
 			logger.info("Skipping this record, DOS option disabled on Portal");
-			throw new SkipException("Skipping this record");
+			throw new SkipException("Skipping this record. DOS option disabled on Portal");
 		}
 		
-			
+			allWindowHandles = driver.getWindowHandles();
+Boolean facilityWindowOpened=false;
+                for (String windowHandle : allWindowHandles) {
+                        if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&& !windowHandle.equals(chargeWindow) && driver.switchTo().window(windowHandle).getTitle().contains("Select - Facility")) {
+                                // Switch to the new window
+                                driver.switchTo().window(windowHandle);
+                                String title = driver.getTitle();
+                                driver.close();
+                                logger.info(title+ " window closed");
+                                facilityWindowOpened=true;
+                                
+                        }
+                }
+                
+                driver.switchTo().window(chargeWindow);
+                logger.info("Switched to charge window");
+                
+                if(facilityWindowOpened==true) {
+                logger.info("closing the window "+driver.getTitle());        
+                        driver.close();
+                        excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. Facility Name not found");
+                        driver.switchTo().window(secondWindow);
+                        throw new SkipException("Skipping this record, Facility Name not found");
+                }
 		
 			
 			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@id='ellProvider']//span"))).click();
