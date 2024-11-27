@@ -159,8 +159,15 @@ rowNum++;
 		String DOS= data.get("DOS").trim();
 		String admissionDate= data.get("Admission Date").trim();
 		
-		String DOB = data.get("DOB").trim();
-		String providerCode = data.get("Provide Code").trim();
+		String DOB = data.get("DOB");
+		String providerCode = data.get("Provide Code");
+		if(providerCode.isBlank()|| providerCode.isEmpty() || providerCode.contains("-")) {
+			excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. CPT not present");
+			logger.info("CPT not present");
+			throw new SkipException("CPT not present");
+		}else {
+			providerCode = providerCode.trim();
+		}
 		String chartNum = data.get("Chart Number").trim().replace(".0", "").trim();
 		String phone = data.get("Phone");
 		String renderingProvider = data.get("Rendering Provider").trim();
@@ -180,6 +187,8 @@ rowNum++;
 		if(DOB.contains("-")) {
 			DOB="";
 		}else {
+			DOB=DOB.trim();
+		
 		DOB=	formatter.format(parser.parse(DOB));
 		}
 		
