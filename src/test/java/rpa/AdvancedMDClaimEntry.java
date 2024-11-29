@@ -313,7 +313,10 @@ driver.switchTo().window(secondWindow);
 			driver.switchTo().defaultContent();
 			waitExplicit.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("frmPatientInfo"));
 			logger.info("Switched to frame frmPaitentInfo");
-			driver.findElement(By.xpath("//span[text()='Transaction Entr']")).click();
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[text()='Transaction Entr']")));
+			
+			((JavascriptExecutor) driver).executeScript("arguments[0].click();", driver.findElement(By.xpath("//span[text()='Transaction Entr']")));
+			
 			logger.info("Clicked on Transaction entry");
 
 			driver.manage().window().maximize();
