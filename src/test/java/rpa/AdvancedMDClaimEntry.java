@@ -171,7 +171,7 @@ rowNum++;
 		}
 		
 		String chartNum = data.get("Chart Number");
-		String phone = data.get("Phone");
+		
 		String renderingProvider = data.get("Rendering Provider").trim();
 		String refProvider = data.get("Referring Provider").trim();
 		String facility = data.get("Hospital Name").trim();
