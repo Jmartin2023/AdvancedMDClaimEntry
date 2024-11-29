@@ -240,7 +240,7 @@ try {
 
 
 			if(firstRun==true) {
-				Thread.sleep(30000);
+				Thread.sleep(45000);
 			}
 			firstRun=false;
 			
