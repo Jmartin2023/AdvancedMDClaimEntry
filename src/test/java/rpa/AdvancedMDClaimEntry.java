@@ -171,7 +171,7 @@ rowNum++;
 		}
 		
 		String chartNum = data.get("Chart Number");
-		
+	//	String phone = data.get("Phone");
 		String renderingProvider = data.get("Rendering Provider").trim();
 		String refProvider = data.get("Referring Provider").trim();
 		String facility = data.get("Hospital Name").trim();
@@ -201,7 +201,7 @@ rowNum++;
 			
 		}else {
 			
-			chartNum =chartNum.trim().replace(".0", "").trim();
+			chartNum = chartNum.trim().replace(".0", "").trim();
 			
 		}
 		if(admissionDate.isBlank()|| admissionDate.isBlank()|| admissionDate.contains("-")) {
@@ -252,17 +252,17 @@ try {
 			
 			logger.info("patient name entered as: "+name +" | DOB: "+DOB+" | Chart Number: "+chartNum);
 
-	
+			secondWindow = driver.getWindowHandle();
 		
 			
 try {
 	
 	logger.info("patient searching in try block");
-	wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")));
+	wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[text()='"+chartNum+"']")));
 
 			//span[text()='Wood']/following-sibling::span[contains(text(),'William')]/ancestor::div[@class='row-item']/following-sibling::div[1]/div[contains(text(),'07/27/1965')]
 			
-			driver.findElement(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[contains(text(),'"+chartNum+"')]")).click();
+			driver.findElement(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div[(text()='"+chartNum+"']")).click();
 			logger.info("patient selected");
 			
 }catch(Exception e) {
@@ -286,14 +286,28 @@ try {
 	
 
 }
-			
+
 			Thread.sleep(5000);
 			//div[@class='additional-item dob-item mr-medium' and text()='12/12/1975']
+			
+			
+			try {
+			
+				String alertMsg = driver.switchTo().alert().getText();
+				
+				driver.switchTo().alert().dismiss();
+				logger.info("Alert Dismissed "+alertMsg);
+			
+			
+			}catch(Exception e) {
+				
+			}
+			
 			
 try {
 				
 				allWindowHandles = driver.getWindowHandles();
-				secondWindow = driver.getWindowHandle();
+				
 				
 				for (String windowHandle : allWindowHandles) {
 					if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)) {
@@ -308,11 +322,13 @@ try {
 				
 				
 			}catch(Exception e) {}
-			
-driver.switchTo().window(secondWindow);
+				
+			driver.switchTo().window(secondWindow);
 			driver.switchTo().defaultContent();
 			waitExplicit.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("frmPatientInfo"));
 			logger.info("Switched to frame frmPaitentInfo");
+			
+			Thread.sleep(5000);
 			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[text()='Transaction Entr']")));
 			
 			((JavascriptExecutor) driver).executeScript("arguments[0].click();", driver.findElement(By.xpath("//span[text()='Transaction Entr']")));
@@ -392,10 +408,16 @@ for (WebElement label : labels) {
 		((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1];", driver.findElement(By.xpath("//div[@id='ellFacility']/input")), facilityCode);
 		driver.findElement(By.xpath("//div[@id='ellFacility']/input")).sendKeys(Keys.TAB);
 		
-		//	driver.findElement(By.xpath("//div[@id='ellFacility']/input")).sendKeys(facilityCode+Keys.TAB)	;
+		//	driver.findElement(By.xpath("//div[@id='ellFacility']/input")).sendKeys(facility.split("-")[0].trim()+Keys.TAB)	;
 		logger.info("Facility entered as "+facilityCode);
 						Thread.sleep(3500);
-		
+			
+						wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='ellFacility']")));
+						String enteredFacility = driver.findElement(By.xpath("//div[@id='ellFacility']")).getAttribute("data-returnvalue").toString();
+						logger.info("Entered Facility displayed is "+enteredFacility);
+						excel.setCellData(sheetName, "Facility Visible", rowNum, enteredFacility);
+						
+						
 			
 			wait.until(ExpectedConditions.elementToBeClickable(By.id("selEpisode")));
 			Select select = new Select(driver.findElement(By.id("selEpisode")));
@@ -413,13 +435,79 @@ for (WebElement label : labels) {
 			}
 			
 			if(flagAdmissionDate==false) {
-				logger.info("Admission Date Not Available in Application");
-				excel.setCellData(sheetName, "Admission Date Comments", rowNum, "Admission Date Not Available in Application");
-			}
+				
+				driver.findElement(By.id("btnEpisode")).click();
+				logger.info("Manage Episodes Button clicked");
+				
+				Thread.sleep(3000);
+				allWindowHandles = driver.getWindowHandles();
+
+				for (String windowHandle : allWindowHandles) {
+					if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&& !windowHandle.equals(chargeWindow)&& driver.switchTo().window(windowHandle).getTitle().contains("Episode")) {
+						// Switch to the new window
+						driver.switchTo().window(windowHandle);
+						String title = driver.getTitle();
+						logger.info(title+ "Admission Date creation window opened");
+						break;
+						
+					}
+				}
+				
+				driver.findElement(By.id("txtName")).click();
+				driver.findElement(By.id("btnClear")).click();
+				logger.info("Clear button clicked");
+				driver.findElement(By.id("txtName")).sendKeys("ADM "+admissionDate);
+				logger.info("Admission date entered in input field");
+				driver.findElement(By.id("btnSave")).click();
+				logger.info("Save button clicked");
+				try {
+					driver.findElement(By.xpath("//td[contains(text(),'ADM "+admissionDate+"')]")).isDisplayed();
+				}catch(Exception e) {
+					
+					logger.info("Admission Date could not be entered. Please verify");
+					excel.setCellData(sheetName, "Admission Date Comments", rowNum, "Admission Date could not be entered. Please verify");
+					driver.close();
+					logger.info("Creating Admission Date window");
+					driver.switchTo().window(chargeWindow).close();
+					logger.info("Charge Window closed");
+					driver.switchTo().window(secondWindow);
+					logger.info("Switched to main second window");
+					throw new SkipException("Admission Date could not be entered. Please verify");
+					
+				}
+				driver.findElement(By.id("btnClose")).click();
+				logger.info("Close button clicked");
+				
+				driver.switchTo().window(chargeWindow);
+				logger.info("Switched to Charge window");
+				
+				wait.until(ExpectedConditions.elementToBeClickable(By.id("selEpisode")));
+				Select selectAgain = new Select(driver.findElement(By.id("selEpisode")));
+				
+				for (WebElement option : selectAgain.getOptions()) {
+		            if (option.getText().contains(admissionDate) || option.getText().contains(admissionDate.replace("/", ""))) {
+		            	System.out.println(option.getText().contains(admissionDate) );
+		            	System.out.println(option.getText().contains(admissionDate) );
+		                option.click(); // Select the option
+		                driver.findElement(By.id("selEpisode")).sendKeys(Keys.TAB);
+		                logger.info("Option selected: " + option.getText());
+		                flagAdmissionDate=true;
+		                break; // Exit loop once the desired option is selected
+		            }
+				}
+				
+				if(flagAdmissionDate==false) {
+					
+					logger.info("Admission date could not be entered in 2nd try");
+					excel.setCellData(sheetName, "Admission Date Comments", rowNum, "Admission date could not be entered in 2nd try");
+				}
+				
+				}
 			
 
 			Thread.sleep(2000);
 		try {	
+			wait.until(ExpectedConditions.elementToBeClickable(By.id("txtBeginDate")));
 			driver.findElement(By.id("txtBeginDate")).clear();
 			driver.findElement(By.id("txtEndDate")).clear();
 			
@@ -433,33 +521,38 @@ for (WebElement label : labels) {
 			driver.close();
 			driver.switchTo().window(secondWindow);
 			logger.info("Skipping this record, DOS option disabled on Portal");
-			throw new SkipException("Skipping this record. DOS option disabled on Portal");
+			throw new SkipException("Skipping this record, DOS option disabled on Portal");
 		}
 		
-			allWindowHandles = driver.getWindowHandles();
+			
+		
+		
+		allWindowHandles = driver.getWindowHandles();
 Boolean facilityWindowOpened=false;
-                for (String windowHandle : allWindowHandles) {
-                        if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&& !windowHandle.equals(chargeWindow) && driver.switchTo().window(windowHandle).getTitle().contains("Select - Facility")) {
-                                // Switch to the new window
-                                driver.switchTo().window(windowHandle);
-                                String title = driver.getTitle();
-                                driver.close();
-                                logger.info(title+ " window closed");
-                                facilityWindowOpened=true;
-                                
-                        }
-                }
-                
-                driver.switchTo().window(chargeWindow);
-                logger.info("Switched to charge window");
-                
-                if(facilityWindowOpened==true) {
-                logger.info("closing the window "+driver.getTitle());        
-                        driver.close();
-                        excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. Facility Name not found");
-                        driver.switchTo().window(secondWindow);
-                        throw new SkipException("Skipping this record, Facility Name not found");
-                }
+		for (String windowHandle : allWindowHandles) {
+			if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&& !windowHandle.equals(chargeWindow) && driver.switchTo().window(windowHandle).getTitle().contains("Select - Facility")) {
+				// Switch to the new window
+				driver.switchTo().window(windowHandle);
+				String title = driver.getTitle();
+				driver.close();
+				logger.info(title+ " window closed");
+				facilityWindowOpened=true;
+				
+			}
+		}
+		
+		driver.switchTo().window(chargeWindow);
+		logger.info("Switched to charge window");
+		
+		if(facilityWindowOpened==true) {
+		logger.info("closing the window "+driver.getTitle());	
+			driver.close();
+			excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. Facility Name not found");
+			driver.switchTo().window(secondWindow);
+			throw new SkipException("Skipping this record, Facility Name not found");
+		}
+		
+		
 		
 			
 			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@id='ellProvider']//span"))).click();
@@ -602,12 +695,14 @@ Thread.sleep(2000);
 				}
 				
 				driver.switchTo().window(chargeWindow);
-			logger.info("Switched to charge window");
-
+				logger.info("Switched to charge window");
+				
 wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[text()='ICD-10 Diagnosis Codes']")));
-			driver.findElement(By.xpath("//label[text()='ICD-10 Diagnosis Codes']")).click();
+				
+				
+				driver.findElement(By.xpath("//label[text()='ICD-10 Diagnosis Codes']")).click();
 				logger.info("Clicked on text: ICD-10 Diagnosis Codes");
-			
+				
 				
 				driver.findElement(By.id("btnAddSave")).click();
 				logger.info("Clicked on Add button");
@@ -621,14 +716,18 @@ wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[text(
 					String alertText = driver.switchTo().alert().getText();
 					logger.info(alertText);
 					driver.switchTo().alert().dismiss();
-					excel.setCellData(sheetName, "Bot Status", rowNum, alertText);
+					System.out.println(driver.switchTo().alert().getText());
+					driver.switchTo().alert().dismiss();
+					excel.setCellData(sheetName, "Bot Status", rowNum, "Fail");
 					
-					driver.switchTo().window(chargeWindow);
-					wait.until(ExpectedConditions.elementToBeClickable(By.id("btnCancel"))).click();
+				//	driver.switchTo().window(chargeWindow);
+				//	Thread.sleep(1500);
+				//	wait.until(ExpectedConditions.elementToBeClickable(By.id("btnCancel")));
+					driver.close();
 					driver.switchTo().window(secondWindow);
 					logger.info("Skipping this record, Charge already in database");
-				
-					throw new SkipException("Skipping this record, Charge already in database");
+				Assert.fail("Skipping this record, Charge already in database");
+					
 					
 					
 				}catch(Exception e) {}
