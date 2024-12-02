@@ -161,7 +161,7 @@ rowNum++;
 		String admissionDate= data.get("Admission Date").trim();
 		
 		String DOB = data.get("DOB");
-		String providerCode = data.get("Provide Code");
+		String providerCode = data.get("Provider Code");
 		if(providerCode.isBlank()|| providerCode.isEmpty() || providerCode.contains("-")) {
 			excel.setCellData(sheetName, "Bot Status", rowNum, "Fail. Provider Code not present");
 			logger.info("CPT not present");
