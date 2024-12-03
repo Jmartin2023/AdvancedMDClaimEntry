@@ -512,6 +512,15 @@ for (WebElement label : labels) {
 				driver.findElement(By.id("btnClose")).click();
 				logger.info("Close button clicked");
 				
+				try {
+					Thread.sleep(1000);
+					logger.info(driver.switchTo().alert().getText()+" alert dismissed");
+					driver.switchTo().alert().dismiss();
+					
+				}catch(Exception e) {
+					
+				}
+				
 				driver.switchTo().window(chargeWindow);
 				logger.info("Switched to Charge window");
 				
