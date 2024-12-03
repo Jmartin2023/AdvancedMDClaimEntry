@@ -269,7 +269,7 @@ try {
 	logger.info("patient searching in catch block");
 	
 	try {
-		wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='"+DOB+"')]/ancestor::div//div/span[text()='"+chartNum+"']")));
+		wait10.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'"+DOB+"')]/ancestor::div//div/span[text()='"+chartNum+"']")));
 
 		//span[text()='Wood']/following-sibling::span[contains(text(),'William')]/ancestor::div[@class='row-item']/following-sibling::div[1]/div[contains(text(),'07/27/1965')]
 		
