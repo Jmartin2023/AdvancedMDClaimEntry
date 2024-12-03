@@ -364,7 +364,7 @@ try {
 			//driver.switchTo().defaultContent();
 
 			Thread.sleep(2000);
-			chargeWindow = driver.getWindowHandle();
+			
 			System.out.println(driver.getTitle());
 			driver.manage().window().maximize();
 
@@ -393,6 +393,22 @@ for (WebElement label : labels) {
 		}catch(Exception e) {
 			
 			try {
+				
+				allWindowHandles = driver.getWindowHandles();
+
+				for (String windowHandle : allWindowHandles) {
+					if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&& driver.switchTo().window(windowHandle).getTitle().contains("Batch Information")) {
+						// Switch to the new window
+						driver.switchTo().window(windowHandle);
+						logger.info("Switched to Batch information");
+						break;
+					}
+				}
+				
+				
+				
+				
+				
 				wait.until(ExpectedConditions.elementToBeClickable(By.id("btnNewBatch"))).click();
 				logger.info("Clicked on Begin New Batch");
 				Thread.sleep(1500);
@@ -401,6 +417,20 @@ for (WebElement label : labels) {
 			}catch(Exception e1) {}
 			
 		}
+		
+		allWindowHandles = driver.getWindowHandles();
+
+		for (String windowHandle : allWindowHandles) {
+			if (!windowHandle.equals(LoginWindow) && !windowHandle.equals(secondWindow)&& driver.switchTo().window(windowHandle).getTitle().contains("Charge Entry")) {
+				// Switch to the new window
+				driver.switchTo().window(windowHandle);
+				logger.info("Switched to Charge Entry Window");
+				break;
+			}
+		}
+		
+		chargeWindow = driver.getWindowHandle();
+		
 		Thread.sleep(2000);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='ellFacility']/input")));
 		
@@ -461,10 +491,14 @@ for (WebElement label : labels) {
 				driver.findElement(By.id("btnSave")).click();
 				logger.info("Save button clicked");
 				try {
+					Thread.sleep(1000);
+					wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[contains(text(),'ADM "+admissionDate+"')]")));
 					driver.findElement(By.xpath("//td[contains(text(),'ADM "+admissionDate+"')]")).isDisplayed();
 				}catch(Exception e) {
 					
 					logger.info("Admission Date could not be entered. Please verify");
+					excel.setCellData(sheetName, "Bot Status", rowNum, "Fail");
+					
 					excel.setCellData(sheetName, "Admission Date Comments", rowNum, "Admission Date could not be entered. Please verify");
 					driver.close();
 					logger.info("Creating Admission Date window");
@@ -499,6 +533,8 @@ for (WebElement label : labels) {
 				if(flagAdmissionDate==false) {
 					
 					logger.info("Admission date could not be entered in 2nd try");
+				//	excel.setCellData(sheetName, "Admission Date Comments", rowNum, "Admission date could not be entered in 2nd try");
+					
 					excel.setCellData(sheetName, "Admission Date Comments", rowNum, "Admission date could not be entered in 2nd try");
 				}
 				
