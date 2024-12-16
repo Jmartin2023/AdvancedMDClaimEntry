@@ -125,7 +125,10 @@ Boolean firstRun;
 		logger.info("officeKey entered");
 
 		LoginWindow = driver.getWindowHandle();
-		driver.findElement(By.xpath("//button[contains(text(),'Log in')]")).click();
+	//	driver.findElement(By.xpath("//button[contains(text(),'Log in')]")).click();
+
+ ((JavascriptExecutor) driver).executeScript("arguments[0].click();", driver.findElement(By.xpath("//button[contains(text(),'Log in')]")));
+		
 		logger.info("Login button clicked");
 
 		Thread.sleep(16000);
