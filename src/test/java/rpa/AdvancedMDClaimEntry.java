@@ -236,8 +236,7 @@ rowNum++;
 		
 		if(status.isBlank() || status.isEmpty()) {
 			WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(35));
-			wait.until(webDriver -> "complete".equals(((JavascriptExecutor) webDriver)
-					.executeScript("return document.readyState")));
+	//	wait.until(webDriver -> "complete".equals(((JavascriptExecutor) webDriver).executeScript("return document.readyState")));
 
 
 try {
