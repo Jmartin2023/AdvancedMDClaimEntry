@@ -124,11 +124,14 @@ Boolean firstRun;
 		driver.findElement(By.id("officeKey")).sendKeys("125092");
 		logger.info("officeKey entered");
 
-		LoginWindow = driver.getWindowHandle();
-	//	driver.findElement(By.xpath("//button[contains(text(),'Log in')]")).click();
-
- ((JavascriptExecutor) driver).executeScript("arguments[0].click();", driver.findElement(By.xpath("//button[contains(text(),'Log in')]")));
+	
 		
+		LoginWindow = driver.getWindowHandle();
+		
+		((JavascriptExecutor) driver).executeScript("arguments[0].click();", driver.findElement(By.xpath("//button[contains(text(),'Log in')]")));
+		
+		
+	//	driver.findElement(By.xpath("//button[contains(text(),'Log in')]")).click();
 		logger.info("Login button clicked");
 
 		Thread.sleep(16000);
@@ -148,7 +151,9 @@ Boolean firstRun;
 		//   driver.findElement(By.id("mnuPatientInfo")).click();
 		logger.info("Clicked on patient info");
 		//   Thread.sleep(10000);
+		
 
+		//button[contains(text(),'Accept Cookies')]
 
 		firstRun=true;
 	}
