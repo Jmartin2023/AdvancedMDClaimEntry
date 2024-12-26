@@ -182,7 +182,7 @@ rowNum++;
 	//	String phone = data.get("Phone");
 		String renderingProvider = data.get("Rendering Provider").trim();
 		String refProvider = data.get("Referring Provider").trim();
-		String facility = data.get("Hospital Name").trim();
+		String facility = data.get("Facility Name").trim();
 		String cpts = data.get("CPTs").replace(".0", "");
 		String diagnosis = data.get("DX");
 		String[] diagArray;
