@@ -768,7 +768,7 @@ wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[text(
 					String alertText = driver.switchTo().alert().getText();
 					logger.info(alertText);
 					driver.switchTo().alert().dismiss();
-					System.out.println(driver.switchTo().alert().getText());
+				//	System.out.println(driver.switchTo().alert().getText());
 					driver.switchTo().alert().dismiss();
 					excel.setCellData(sheetName, "Bot Status", rowNum, "Fail");
 					
