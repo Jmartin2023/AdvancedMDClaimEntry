@@ -336,9 +336,9 @@ try {
 			logger.info("Switched to frame frmPaitentInfo");
 			
 			Thread.sleep(5000);
-			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[text()='Transaction Entr']")));
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(@class,'left-panel-list')]//i[contains(@class,'trans-entry-card')]")));
 			
-			((JavascriptExecutor) driver).executeScript("arguments[0].click();", driver.findElement(By.xpath("//span[text()='Transaction Entr']")));
+			((JavascriptExecutor) driver).executeScript("arguments[0].click();", driver.findElement(By.xpath("//div[contains(@class,'left-panel-list')]//i[contains(@class,'trans-entry-card')]")));
 			
 			logger.info("Clicked on Transaction entry");
 
